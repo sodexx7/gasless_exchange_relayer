@@ -1,0 +1,23 @@
+{
+  "relayerType": "pairOrdersExecute",
+  "request": {
+    "buyOrderInfo": {
+      "buyer": "0x00F1CC2B34D6f63A726bDF08f6F198de9bC53114",
+      "holdTokenAAmount": "90000000000000000000",
+      "expectedTokenBAmount": "45000000000000000000",
+      "nonce": "2",
+      "buyDeadline": "1709790646"
+    },
+    "buyOrderSignature": "0x2a7617fb840906f6ad4371bf130d94c83a32cfd3c26b81f4a8e862ed7ee4374c1a05ad0dba3482d49452a1cd877fc91322238469f5dd762d27f0dde0bc7a8f9e1c",
+    "buyOrderSignatureStatus": 0,
+    "sellOrderInfo": {
+      "seller": "0xFA313E45f1Ba592DAD8E685e913ada0cFf53fe78",
+      "holdTokenBAmount": "45000000000000000000",
+      "expectedTokenAAmount": "90000000000000000000",
+      "nonce": "2",
+      "sellDeadline": "1709792556"
+    },
+    "sellOrderSignature": "0xa55e052ee85d1a39a2360abba371e1b7b56fb6a665f84b83d79db989e6940b712ca6881ef63e03eddbf4a4b51852373ece99712f5ae61f3c3b8a9c67e27b3f8c1c",
+    "sellOrderSignatureStatus": 1
+  }
+}
