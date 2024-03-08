@@ -83,6 +83,11 @@
 
    2. [simulate_executeLeftOrders](scripts/simulate_executeLeftOrders.js).
 
+# plus 20240308
+
+1. Now price using completly matched, such as if buyer: 100 tokenA => 50 tokenB, seller 5 tokenB => 10 tokenA , only price completly matched can execute.
+2. Should accept more possbilities, such as buyer buy tokenB 0.5 tokenA, if seller sell tokenB less than 0.5 tokenB. also should accept. The price can pick the middle price of the buyer and seller price.
+
 # 5. Other Info
 
 1. test addresses in sepoli

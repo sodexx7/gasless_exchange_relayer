@@ -19,16 +19,16 @@ contract ExecuteOrder is EIP712, Nonces {
 
     struct BuyOrder {
         address buyer;
-        uint256 holdTokenAAmount;    // default as tokenA
-        uint256 expectedTokenBAmount;// default as tokenB
-        uint256 buyDeadline;
+        uint112 holdTokenAAmount;    // default as tokenA
+        uint112 expectedTokenBAmount;// default as tokenB
+        uint32 buyDeadline;
     }
 
     struct SellOrder {
         address seller;
-        uint256 holdTokenBAmount;        // default as tokenB
-        uint256 expectedTokenAAmount;    // default as tokenA
-        uint256 sellDeadline;
+        uint112 holdTokenBAmount;        // default as tokenB
+        uint112 expectedTokenAAmount;    // default as tokenA
+        uint32 sellDeadline;
     }
 
     // This store the unused amount for the order, 
@@ -38,24 +38,24 @@ contract ExecuteOrder is EIP712, Nonces {
     mapping(bytes32 => SellOrder) public sellOrders;
 
 
-    error NoEnoughTokenAApprovals(address buyer,uint256 tokenAAmount);
-    error NoEnoughTokenBApprovals(address seller,uint256 tokenBAmount);
+    error NoEnoughTokenAApprovals(address buyer,uint112 tokenAAmount);
+    error NoEnoughTokenBApprovals(address seller,uint112 tokenBAmount);
 
     error UnValidBuySignature(address buyer, address singer); // add more params?
-    error UnValidSellSignature(address seller, uint holdTokenBAmount, uint expectedTokenAAmount,uint sellDeadline); // add more params?
+    error UnValidSellSignature(address seller, uint112 holdTokenBAmount, uint112 expectedTokenAAmount,uint32 sellDeadline); // add more params?
 
-    error OrderBuyExpired(address buyer,uint holdTokenAAmount, uint expectedTokenBAmount,uint deadline);
-    error OrderSellExpired(address seller,uint holdTokenBAmount, uint expectedTokenAAmount,uint deadline);
+    error OrderBuyExpired(address buyer,uint112 holdTokenAAmount, uint112 expectedTokenBAmount,uint32 deadline);
+    error OrderSellExpired(address seller,uint112 holdTokenBAmount, uint112 expectedTokenAAmount,uint32 deadline);
 
-    error OrderBuyLeftNoMatched(address buyer,uint holdTokenAAmount, uint expectedTokenBAmount,uint deadline);
-    error OrderSellLeftNoMatched(address seller,uint holdTokenBAmount, uint expectedTokenAAmount,uint deadline);
+    error OrderBuyLeftNoMatched(address buyer,uint112 holdTokenAAmount, uint112 expectedTokenBAmount,uint32 deadline);
+    error OrderSellLeftNoMatched(address seller,uint112 holdTokenBAmount, uint112 expectedTokenAAmount,uint32 deadline);
 
 
     error OrdersPriceNoMatch();
 
-    event OrderAllComplete(address indexed buyer,address indexed  seller,uint buyerReceiveTokenBAmount,uint sellReceiveTokenAAmount);
+    event OrderAllComplete(address indexed buyer,address indexed  seller,uint112 buyerReceiveTokenBAmount,uint112 sellReceiveTokenAAmount);
 
-    event OrderPartComplete(address indexed buyer,address indexed seller,uint buyerReceiveTokenBAmount,uint sellReceiveTokenAAmount);
+    event OrderPartComplete(address indexed buyer,address indexed seller,uint112 buyerReceiveTokenBAmount,uint112 sellReceiveTokenAAmount);
 
 
     //  tokenA and tokenB as trade pairs
@@ -104,7 +104,7 @@ contract ExecuteOrder is EIP712, Nonces {
         }
 
         // 2. price check, off-chain should checked , but should also check here. check formula: holdTokenAAmount*holdTokenBAmount = expectedTokenBAmount*expectedTokenAAmount
-        if(buyOrder.holdTokenAAmount*sellOrder.holdTokenBAmount != buyOrder.expectedTokenBAmount*sellOrder.expectedTokenAAmount){
+        if(uint256(buyOrder.holdTokenAAmount) * uint256(sellOrder.holdTokenBAmount) != uint256(buyOrder.expectedTokenBAmount) * uint256(sellOrder.expectedTokenAAmount)){
             revert OrdersPriceNoMatch(); 
         }
 
@@ -152,7 +152,7 @@ contract ExecuteOrder is EIP712, Nonces {
         } 
     }
         
-    function _orderBuySignatureCheck(address buyer, uint holdTokenAAmount, uint expectedTokenBAmount,uint buyDeadline,bytes memory signature) internal {
+    function _orderBuySignatureCheck(address buyer, uint112 holdTokenAAmount, uint112 expectedTokenBAmount,uint32 buyDeadline,bytes memory signature) internal {
 
         if (block.timestamp > buyDeadline) {
             revert OrderBuyExpired(buyer,holdTokenAAmount,expectedTokenBAmount,buyDeadline);
@@ -165,7 +165,7 @@ contract ExecuteOrder is EIP712, Nonces {
         }
     }
 
-    function _orderSellSignatureCheck(address seller, uint holdTokenBAmount, uint expectedTokenAAmount ,uint sellDeadline,bytes memory signature) internal {
+    function _orderSellSignatureCheck(address seller, uint112 holdTokenBAmount, uint112 expectedTokenAAmount ,uint32 sellDeadline,bytes memory signature) internal {
 
         if (block.timestamp > sellDeadline) {
             revert OrderSellExpired(seller,holdTokenBAmount,expectedTokenAAmount,sellDeadline);
@@ -179,7 +179,7 @@ contract ExecuteOrder is EIP712, Nonces {
    }
 
 
-    function _orderLeftBuyCheck(address buyer, uint holdTokenAAmount, uint expectedTokenBAmount ,uint deadline,bytes memory orderSignature) internal {
+    function _orderLeftBuyCheck(address buyer, uint112 holdTokenAAmount, uint112 expectedTokenBAmount ,uint32 deadline,bytes memory orderSignature) internal {
 
         bytes32 buyLeftOrderSignature = keccak256(orderSignature);
         BuyOrder memory buyOrder =  buyOrders[buyLeftOrderSignature];
@@ -197,7 +197,7 @@ contract ExecuteOrder is EIP712, Nonces {
     }
 
     
-    function _orderLeftSellCheck(address seller, uint holdTokenBAmount, uint expectedTokenAAmount,uint deadline,bytes memory orderSignature) internal {
+    function _orderLeftSellCheck(address seller, uint112 holdTokenBAmount, uint112 expectedTokenAAmount,uint32 deadline,bytes memory orderSignature) internal {
 
         bytes32 sellLeftOrderSignature = keccak256(orderSignature);
 
